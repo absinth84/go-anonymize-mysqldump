@@ -4,14 +4,15 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/akamensky/argparse"
-	"github.com/sirupsen/logrus"
-	"github.com/xwb1989/sqlparser"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/akamensky/argparse"
+	"github.com/sirupsen/logrus"
+	"github.com/xwb1989/sqlparser"
 )
 
 type Config struct {
@@ -28,16 +29,18 @@ type PatternField struct {
 	Position    int                      `json:"position"`
 	Type        string                   `json:"type"`
 	Constraints []PatternFieldConstraint `json:"constraints"`
+	Prefix      string                   `json:"prefix"`
 }
 
 type PatternFieldConstraint struct {
 	Field    string `json:"field"`
 	Position int    `json:"position"`
 	Value    string `json:"value"`
+	Prefix   string `json:"prefix"`
 }
 
 var (
-	transformationFunctionMap = map[string]func(*sqlparser.SQLVal) *sqlparser.SQLVal{
+	transformationFunctionMap = map[string]func() string{
 		"username":  generateUsername,
 		"password":  generatePassword,
 		"email":     generateEmail,
@@ -68,7 +71,6 @@ func init() {
 
 func main() {
 	config := parseArgs()
-
 	lines := setupAndProcessInput(config, os.Stdin)
 
 	for line := range lines {
@@ -296,7 +298,12 @@ func modifyValues(values sqlparser.Values, pattern ConfigPattern) (sqlparser.Val
 			// Position is 1 indexed instead of 0, so let's subtract 1 in order to get
 			// it to line up with the value inside the ValTuple inside of values.Values
 			valTupleIndex := fieldPattern.Position - 1
-			value := values[row][valTupleIndex].(*sqlparser.SQLVal)
+			value, vError := values[row][valTupleIndex].(*sqlparser.SQLVal)
+
+			//Skip transformation of null values
+			if !vError {
+				continue
+			}
 
 			// Skip transformation if transforming function doesn't exist
 			if transformationFunctionMap[fieldPattern.Type] == nil {
@@ -320,12 +327,17 @@ func modifyValues(values sqlparser.Values, pattern ConfigPattern) (sqlparser.Val
 				continue
 			}
 
-			values[row][valTupleIndex] = transformationFunctionMap[fieldPattern.Type](value)
+			//decodedValue := convertSQLValToString(value)
+			//logrus.Error(decodedValue)
+
+			newValue := transformationFunctionMap[fieldPattern.Type]()
+			values[row][valTupleIndex] = sqlparser.NewStrVal([]byte(fieldPattern.Prefix + newValue))
 		}
 
 	}
 
 	// values[0][0] = sqlparser.NewStrVal([]byte("Foobar"))
+
 	return values, nil
 }
 

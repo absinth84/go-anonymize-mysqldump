@@ -1,43 +1,42 @@
 package main
 
 import (
-	"github.com/xwb1989/sqlparser"
 	"syreclabs.com/go/faker"
 )
 
-func generateUsername(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Internet().UserName()))
+func generateUsername() string {
+	return faker.Internet().UserName()
 }
 
-func generatePassword(value *sqlparser.SQLVal) *sqlparser.SQLVal {
+func generatePassword() string {
 	// TODO encrypt this value
-	return sqlparser.NewStrVal([]byte(faker.Internet().Password(8, 14)))
+	return faker.Internet().Password(8, 14)
 }
 
-func generateEmail(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Internet().SafeEmail()))
+func generateEmail() string {
+	return faker.Internet().SafeEmail()
 }
 
-func generateURL(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Internet().Url()))
+func generateURL() string {
+	return faker.Internet().Url()
 }
 
-func generateName(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Name().Name()))
+func generateName() string {
+	return faker.Name().Name()
 }
 
-func generateFirstName(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Name().FirstName()))
+func generateFirstName() string {
+	return faker.Name().FirstName()
 }
 
-func generateLastName(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Name().LastName()))
+func generateLastName() string {
+	return faker.Name().LastName()
 }
 
-func generateParagraph(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Lorem().Sentence(3)))
+func generateParagraph() string {
+	return faker.Lorem().Sentence(3)
 }
 
-func generateIPv4(value *sqlparser.SQLVal) *sqlparser.SQLVal {
-	return sqlparser.NewStrVal([]byte(faker.Internet().IpV4Address()))
+func generateIPv4() string {
+	return faker.Internet().IpV4Address()
 }
