@@ -331,6 +331,7 @@ func modifyValues(values sqlparser.Values, pattern ConfigPattern) (sqlparser.Val
 			//logrus.Error(decodedValue)
 
 			newValue := transformationFunctionMap[fieldPattern.Type]()
+			
 			values[row][valTupleIndex] = sqlparser.NewStrVal([]byte(fieldPattern.Prefix + newValue))
 		}
 

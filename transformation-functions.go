@@ -5,7 +5,7 @@ import (
 )
 
 func generateUsername() string {
-	return faker.Internet().UserName()
+	return (faker.Internet().UserName() + faker.Lorem().Characters(6))
 }
 
 func generatePassword() string {
