@@ -7,7 +7,8 @@
           "field": "user_login",
           "position": 2,
           "type": "username",
-          "constraints": null
+          "constraints": null,
+          "prefix": "_123"
         },
         {
           "field": "user_pass",
